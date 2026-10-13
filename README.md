@@ -1,1 +1,1 @@
-# DeepGen-Oncology
+# Deep Generative Models for Single-Cell Oncology
