@@ -1,0 +1,4 @@
+,MAE log10(mean),MAE log10(var),MAE zero_frac
+poisson_null,0.0612,0.7676,0.0814
+scvi_nb_patient,0.1961,0.4422,0.0041
+scvi_zinb_patient,0.2076,0.4266,0.0037
