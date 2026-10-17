@@ -1,2 +1,4 @@
 # Datasets
-*.h5ad.DS_Store
+*.h5ad
+*.DS_Store
+data/
