@@ -1,0 +1,5 @@
+,ARI,NMI,ASW_celltype,batch_entropy
+X_pca,0.648,0.713,0.642,0.393
+X_scvi_nb_nobatch,0.56,0.745,0.589,0.263
+X_scvi_nb_patient,0.637,0.801,0.613,0.493
+X_scvi_zinb_patient,0.633,0.795,0.604,0.505
