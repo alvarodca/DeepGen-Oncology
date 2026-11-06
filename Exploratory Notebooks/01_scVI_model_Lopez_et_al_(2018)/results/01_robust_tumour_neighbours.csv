@@ -1,0 +1,11 @@
+rep,label,other_patient_neighbours,same_label,permuted,p
+X_scvi_nb_nobatch,subtype,0.017,0.712,0.355,0.002
+X_scvi_nb_nobatch,grade,0.017,0.745,0.478,0.002
+X_scvi_nb_nobatch,cryo_state,0.017,0.63,0.521,0.058
+X_scvi_nb_nobatch,batch_run,0.017,0.093,0.041,0.052
+X_scvi_nb_nobatch,treatment_status,0.017,0.777,0.666,0.026
+X_scvi_nb_patient,subtype,0.386,0.721,0.352,0.002
+X_scvi_nb_patient,grade,0.386,0.76,0.477,0.002
+X_scvi_nb_patient,cryo_state,0.386,0.591,0.522,0.096
+X_scvi_nb_patient,batch_run,0.386,0.065,0.041,0.144
+X_scvi_nb_patient,treatment_status,0.386,0.748,0.665,0.078
