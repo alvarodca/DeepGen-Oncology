@@ -1,0 +1,5 @@
+rep,ARI_kmeans_sd,NMI_kmeans_sd,ARI,ARI_CI,NMI,NMI_CI
+X_pca,0.0001,0.0,0.648,"(np.float64(0.565), np.float64(0.749))",0.713,"(np.float64(0.666), np.float64(0.779))"
+X_scvi_nb_nobatch,0.0002,0.0002,0.56,"(np.float64(0.52), np.float64(0.649))",0.745,"(np.float64(0.722), np.float64(0.791))"
+X_scvi_nb_patient,0.0001,0.0,0.637,"(np.float64(0.596), np.float64(0.714))",0.801,"(np.float64(0.781), np.float64(0.832))"
+X_scvi_zinb_patient,0.0,0.0001,0.633,"(np.float64(0.593), np.float64(0.713))",0.795,"(np.float64(0.776), np.float64(0.826))"
