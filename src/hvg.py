@@ -17,10 +17,10 @@ subtype signal is never lost. The list can therefore have up to n_top + 3 genes.
 from __future__ import annotations
 
 SUBTYPE_GENES = ("ESR1", "PGR", "ERBB2")
+N_HVG = 2500 # Chosen through iteration in the notebook models.ipynb
 
-
-def select_hvg_train(adata, train_cell_mask, n_top: int = 2000, flavor: str = "seurat_v3",
-                     batch_key: str | None = "donor_id", span: float = 0.5,
+def select_hvg_train(adata, train_cell_mask, n_top: int = N_HVG, flavor: str = "seurat_v3",
+                     batch_key: str | None = "donor_id", span: float = 0.7,
                      force_genes=SUBTYPE_GENES):
     """Return the `n_top` HVG names computed on the train cells only, plus `force_genes`.
 
