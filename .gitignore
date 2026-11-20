@@ -6,3 +6,5 @@
 *.pyc
 __pycache__/
 
+*.pdf
+Exploratory Notebooks/AG2_check/*
