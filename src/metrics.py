@@ -14,38 +14,67 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import (adjusted_rand_score, normalized_mutual_info_score,
                              silhouette_score, average_precision_score)
 from sklearn.neighbors import NearestNeighbors
+from scipy.stats import entropy
 
 
 # ---------- integration / clustering (latent space vs true cell types) ----------
+def compute_entropy(X, labels, k=50, normalize=True):
+    _, codes = np.unique(labels, return_inverse=True)
+    n_classes = codes.max() + 1
+    if n_classes < 2:
+        return np.nan
+
+    nn = NearestNeighbors(n_neighbors=min(k, len(X) - 1) + 1, n_jobs=-1).fit(X)
+    indices = nn.kneighbors(X, return_distance=False)[:, 1:]
+
+    counts = np.column_stack([(codes[indices] == c).sum(axis=1) for c in range(n_classes)])
+    base = n_classes if normalize else None
+    return float(entropy(counts, base=base, axis=1).mean())
+
+def _safe_silhouette(Z, labels, sample_size=None, seed=42):
+    labels = np.asarray(labels)
+    n_unique = len(np.unique(labels))
+    if n_unique < 2 or n_unique >= len(Z):
+        return float("nan")
+    return float(silhouette_score(Z, labels, sample_size=sample_size, random_state=seed))
+
 def clustering_scores(Z, cell_type, n_clusters=None, seed=42):
     """ARI/NMI of k-means(Z) vs true cell types, and cell-type silhouette (ASW)."""
     y = np.asarray(cell_type)
     k = n_clusters or len(np.unique(y))
     lab = KMeans(k, n_init=10, random_state=seed).fit_predict(Z)
-    return {"ARI": adjusted_rand_score(y, lab),
-            "NMI": normalized_mutual_info_score(y, lab),
-            "ASW_celltype": (silhouette_score(Z, y) + 1) / 2}  # rescaled to [0,1]
+    asw = _safe_silhouette(Z, y)
+    return {
+        "ARI": float(adjusted_rand_score(y, lab)),
+        "NMI": float(normalized_mutual_info_score(y, lab)),
+        "ASW_celltype": float((asw + 1) / 2) if not np.isnan(asw) else float("nan"),
+    }
 
+def evaluate_embedding(
+    Z,
+    cell_type,
+    patient,
+    batch_run=None,
+    n_clusters=None,
+    k=50,
+    asw_sample_size=20000, # Pairwise distance matrix, thats why 
+    seed=42,
+):
+    """All unsupervised bio-conservation & batch-mixing metrics on the SAME cells."""
+    Z = np.asarray(Z)
+    y_ct = np.asarray(cell_type)
+    y_pat = np.asarray(patient)
 
-def batch_entropy(Z, batch, k=30, seed=42):
-    """Patient mixing: mean normalised entropy of neighbour `batch` labels.
-
-    0 = neighbours all from the same patient, 1 = well mixed. Higher is better
-    for cell-type integration (the goal of patient correction).
-    """
-    b = np.asarray(batch)
-    nn = NearestNeighbors(n_neighbors=k).fit(Z)
-    _, idx = nn.kneighbors(Z)
-    uniq = {v: i for i, v in enumerate(np.unique(b))}
-    codes = np.array([uniq[v] for v in b])
-    ent = []
-    for row in idx:
-        counts = np.bincount(codes[row], minlength=len(uniq))
-        p = counts[counts > 0] / counts.sum()
-        h = -(p * np.log(p)).sum()
-        ent.append(h / np.log(len(uniq)))      # normalise by max possible entropy
-    return float(np.mean(ent))
-
+    scores = clustering_scores(
+        Z, y_ct, n_clusters=n_clusters, asw_sample_size=asw_sample_size, seed=seed
+    )
+    scores["ASW_patient"] = _safe_silhouette(
+        Z, y_pat, sample_size=asw_sample_size, seed=seed
+    )
+    scores["Patient_Entropy"] = compute_entropy(Z, y_pat, k=k, normalize=True)
+    if batch_run is not None:
+        scores["Batch_Run_Entropy"] = compute_entropy(Z, batch_run, k=k, normalize=True)
+    return scores
 
 # ---------- subtype prediction (patient level) ----------
 def auprc_macro(y_true, proba, classes):
