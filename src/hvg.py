@@ -22,8 +22,8 @@ N_HVG = 2500 # Chosen through iteration in the notebook models.ipynb
 def select_hvg_train(adata, train_cell_mask, n_top: int = N_HVG, flavor: str = "seurat_v3",
                      batch_key: str | None = "donor_id", span: float = 0.7,
                      force_genes=SUBTYPE_GENES):
-    """Return the `n_top` HVG names computed on the train cells only, plus `force_genes`.
-
+    """
+    Return the `n_top` HVG names computed on the train cells only, plus `force_genes`.
     batch_key=None gives the old global selection (all cells pooled).
     """
     import scanpy as sc
