@@ -38,12 +38,12 @@ def _safe_silhouette(Z, labels, sample_size=None, seed=42):
         return float("nan")
     return float(silhouette_score(Z, labels, sample_size=sample_size, random_state=seed))
 
-def clustering_scores(Z, cell_type, n_clusters=None, seed=42):
+def clustering_scores(Z, cell_type, n_clusters=None,asw_sample_size = None,  seed=42):
     """ARI/NMI of k-means(Z) vs true cell types, and cell-type silhouette (ASW)."""
     y = np.asarray(cell_type)
     k = n_clusters or len(np.unique(y))
     lab = KMeans(k, n_init=10, random_state=seed).fit_predict(Z)
-    asw = _safe_silhouette(Z, y)
+    asw = _safe_silhouette(Z, y,sample_size=asw_sample_size, seed=seed)
     return {
         "ARI": float(adjusted_rand_score(y, lab)),
         "NMI": float(normalized_mutual_info_score(y, lab)),

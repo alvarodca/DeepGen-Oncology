@@ -41,6 +41,7 @@ def load_adata(path: str | Path | None = None, backed: str | None = None):
     adata.layers["lognorm"] = adata.X
     adata.X = adata.raw.X
     adata.raw = None   # counts are now in X; avoid keeping a third copy
+    return adata
     
     
 
